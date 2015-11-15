@@ -1,0 +1,16 @@
+<script src="github.js"></script>
+<script>
+	var accessToken = sessionStorage.getItem("GITHUBACCESSTOKEN");
+	
+	if (accessToken) {
+		var gh = new Github(accessToken);
+	
+		gh.getHooks("r0flbear", "test").then(function (hooks) {
+			console.log(hooks);
+		});
+	}
+	else {
+		console.error("WHAT!");
+	}
+	
+</script>

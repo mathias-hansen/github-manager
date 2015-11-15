@@ -1,0 +1,27 @@
+<link rel="import" href="/lib/polymer/polymer.html">
+
+<dom-module id="gh-app">
+	<style></style>
+	<template>
+		<content></content>
+	</template>
+</dom-module>
+<script>
+	Polymer({
+		is: "gh-app",
+		properties: {
+			accessToken: String
+		},
+		attached: function () {
+			var accessToken = sessionStorage.getItem("GITHUBACCESSTOKEN");
+	
+			if (!accessToken) {
+				console.log("not authed");
+			}
+			
+			this.children[0].accessToken = accessToken;
+			
+			this.accessToken = accessToken;
+		}
+	})
+</script>

@@ -1,0 +1,14 @@
+{
+  "name": "es6-promise.d",
+  "_cacheHeaders": {
+    "ETag": "\"86c82273a0d67c81132f1bc9bd7ea68c94a4f52c\"",
+    "Content-Length": "3294",
+    "Content-Type": "text/plain; charset=utf-8"
+  },
+  "_release": "e-tag:86c82273a",
+  "main": "index.ts",
+  "_source": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/es6-promise/es6-promise.d.ts",
+  "_target": "*",
+  "_originalSource": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/es6-promise/es6-promise.d.ts",
+  "_direct": true
+}

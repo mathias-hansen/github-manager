@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0-*",
+  "description": "Git Class Library",
+  "authors": [ "Class Library template" ],
+  "tags": [""],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "tooling": {
+    "defaultNamespace": "Git"
+  },
+  "dependencies": {
+    "Microsoft.AspNet.Mvc": "6.0.0-beta8",
+    "System.Net.Http": "4.0.1-beta-23409"
+  },
+  "frameworks": {
+    "dnx451": { }
+  }
+}

@@ -1,0 +1,70 @@
+<link rel="import" href="/lib/polymer/polymer.html">
+<link rel="import" href="/lib/iron-flex-layout/iron-flex-layout.html">
+
+<dom-module id="gh-user">
+	<style>
+		:host {
+			border-radius: 2px;
+			transition: border-color .1s;
+			padding: 10px;
+			@apply(--layout-horizontal);
+		}
+		:host:hover, :host:focus {
+			border-color: black;
+			outline: none;
+		}
+		
+		img {
+			width: 110px;
+			height: 110px;
+		}
+		
+		h1 {
+			font-size: 24px;
+			margin: 0;
+		}
+		
+		h3 {
+			font-size: 18px;
+			margin: 0 0 5px 0;
+		}
+		
+		p {
+			font-size: 15px;
+			margin: 0;
+		}
+		
+		div {
+			margin: 10px 10px 10px 20px;
+			@apply(--layout-vertical);
+			@apply(--layout-start);
+			@apply(--layout-justified);
+		}
+		
+		img[src="loading.gif"] {
+			margin-right: -30px;
+		}
+	</style>
+	<template>
+		<img src="[[avatarUrl]]" alt="avatar">
+		<div>
+			<h1>[[login]]</h1>
+			<h3>[[name]]</h3>
+			<p>[[email]]</p>
+		</div>
+	</template>
+</dom-module>
+<script>
+	Polymer({
+		is: "gh-user",
+		properties: {
+			login: String,
+			name: String,
+			email: String,
+			avatarUrl: {
+				type: String,
+				value: "loading.gif"
+			},
+		}
+	})
+</script>

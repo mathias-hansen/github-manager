@@ -1,0 +1,33 @@
+{
+  "name": "GithubManager",
+  "description": "interface for downloading and updateing repos",
+  "main": "",
+  "moduleType": [],
+  "keywords": [
+    "github",
+    "api",
+    "manager",
+    "repos"
+  ],
+  "authors": [
+    "mathias hansen"
+  ],
+  "license": "MIT",
+  "homepage": "github-manager.nanoplex.dk",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "WebServer/wwwroot/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "es6-promise.d": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/es6-promise/es6-promise.d.ts",
+    "iron-flex-layout": "polymerelements/iron-flex-layout#~1.0.5",
+    "paper-checkbox": "polymerelements/paper-checkbox#~1.0.14",
+    "paper-input": "polymerelements/paper-input#~1.0.18",
+    "paper-spinner": "polymerelements/paper-spinner#~1.0.4",
+    "polymer": "polymer/polymer#~1.2.2"
+  }
+}

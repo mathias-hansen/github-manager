@@ -1,0 +1,172 @@
+<link rel="import" href="/lib/polymer/polymer.html">
+<link rel="import" href="/lib/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="/lib/paper-spinner/paper-spinner.html">
+
+<dom-module id="gh-repo">
+	<style>
+		:host {
+			width: 50%;
+			transition: border-width .2s;
+			cursor: pointer;
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+		}
+		
+		#initial {
+			background-color: #BDBDBD;
+    		color: #616161;
+			font-size: 42px;
+			border-radius: 50%;
+			width: 50px;
+			height: 50px;
+			text-align: center;
+			line-height: 1.25;
+			overflow: hidden;
+			margin: 0 20px;
+		}
+		
+		#text {
+			@apply(--layout-flex);
+		}
+		
+		header {
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+		}
+		
+		header p {
+			margin-left: 10px;
+		}
+		
+		#status {
+			margin-right: 10px;
+		}
+		
+		paper-checkbox {
+			opacity: 1;
+			transition: opacity 1s;
+			--paper-checkbox-checked-color: #2196F3;
+			--paper-checkbox-checked-ink-color: #2196F3;
+		}
+		
+		paper-checkbox[hidden] {
+			opacity: 0;
+			transition: none;
+			display: flex !important;
+		}
+		
+		paper-spinner {
+			position: relative;
+			left: 22px;
+			--paper-spinner-layer-2-color: #2196F3;
+			--paper-spinner-layer-3-color: #2196F3;
+			--paper-spinner-layer-4-color: #2196F3;
+		}
+	</style>
+	<template>
+		<div id="initial">[[_getInitial(name)]]</div>
+		<div id="text">
+			<header>
+				<h2>[[name]]</h2>
+				<p hidden="[[!exists]]">
+					(<span>[[id]]</span>)
+				</p>
+			</header>
+			
+			<p>[[defaultBranch]]</p>
+		</div>
+		<paper-spinner active="[[loading]]">
+		</paper-spinner>
+		<paper-checkbox on-change="setRepo" checked="[[exists]]" hidden="[[loading]]"></paper-checkbox>
+	</template>	
+</dom-module>
+<script>
+	Polymer({
+		is: "gh-repo",
+		properties: {
+			id: Number,
+			name: String,
+			userName: String,
+			defaultBranch: String,
+			status: {
+				type: String,
+				value: "loading"
+			},
+			exists: {
+				type: Boolean,
+				computed: "_exists(status)"
+			},
+			loading: {
+				type: Boolean,
+				computed: "_isLoading(status)"
+			}
+		},
+		ready: function() {
+			this.github = new Github(sessionStorage.GITHUBACCESSTOKEN);
+			
+			this.github.getHookId(this.userName, this.name)
+				.then(function (id) {
+					if (id) {
+						console.log(this.name, id);
+						this.id = id;
+						
+						this.status = "exists";
+					} else {
+						this.status = "new";
+					}
+				}.bind(this))
+				.catch(function (e) {
+					console.error(e);
+					
+					this.status = "new";
+				}.bind(this));
+		},
+		setRepo: function(event) {
+			if (this.status === "new") {
+				this.status = "loading";
+				
+				this.github.addHook(this.userName, this.name).then(function (hook) {
+					this.id = hook.id;
+					
+					this.github.xhr.request("POST", `/repo/create?owner=${this.userName}
+						&repo=${this.name}
+						&hookId=${this.id}
+						&branch=${this.defaultBranch}`)
+							.then(function (response) {
+								if (response === "repo created") {
+									this.status = "exists";	
+								} else {
+									throw response;
+								}
+							}.bind(this));
+				}.bind(this));
+				
+			} else if (this.status === "exists") {
+				this.status = "loading";
+				
+				this.github.removeHook(this.userName, this.name, this.id).then(function () {
+					this.github.xhr.request("DELETE", `/repo/remove?hookId=${this.id}`).then(function(response) {
+						if (response === "repo removed") {
+							this.id = undefined;
+							this.status = "new";
+						}
+						else {
+							throw response;
+						}
+					}.bind(this));
+				}.bind(this));
+			} else {
+				throw this;
+			}
+		},
+		_getInitial: function (text) {
+			return text.split("")[0].toLocaleUpperCase();
+		},
+		_isLoading: function(status) {
+			return status === "loading";
+		},
+		_exists: function(status) {
+			return status === "exists";
+		}
+	})
+</script>

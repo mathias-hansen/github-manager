@@ -1,0 +1,53 @@
+<link rel="import" href="/lib/polymer/polymer.html">
+<link rel="import" href="/lib/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="/colors.html">
+<link rel="import" href="/gh-repo.html">
+
+<dom-module id="gm-repos">
+	<style>
+		:host {
+			@apply(--layout-horizontal);
+			@apply(--layout-start);
+			@apply(--layout-wrap);
+		}
+	</style>
+	<template>
+		<template is="dom-repeat" items="{{repos}}">
+			<gh-repo user-name="[[user]]" name="[[item.name]]" default-branch="[[item.default_branch]]">
+			</gh-repo>
+		</template>
+	</template>
+</dom-module>
+<script>
+	Polymer({
+		is: "gm-repos",
+		properties: {
+			repos: {
+				type: Array,
+				nofify: true
+			},
+			user: String,
+			accessToken: {
+				type: String,
+				observer: "tokenChanged"
+			}
+		},
+		tokenChanged: function (token) {
+			var gh = new Github(token),
+				match = window.location.search.match(/user=[\w\-_]+/);
+				
+			if (match) {
+				this.user = match[0].replace(/user=/, "");
+			}
+			
+			if (this.user) {
+				gh.getRepos(this.user).then(function (repos) {
+					this.repos = repos;
+				}.bind(this));
+			} 
+			else {
+				alert("not logged in");
+			}
+		}
+	});
+</script>

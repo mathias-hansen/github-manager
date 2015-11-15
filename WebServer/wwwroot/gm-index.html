@@ -1,0 +1,117 @@
+<link rel="import" href="/lib/polymer/polymer.html">
+<link rel="import" href="/lib/paper-input/paper-input.html">
+<link rel="import" href="/gm-repos.html">
+<link rel="import" href="/gh-user.html">
+
+<dom-module id="gm-index">
+	<style>
+		:host {
+			@apply(--layout-vertical);
+			@apply(--layout-start);
+		}
+		
+		header {
+			width: 100%;
+			@apply(--layout-horizontal);
+		}
+		
+		.spacer {
+			@apply(--layout-flex);
+		}
+		
+		gh-user, paper-input {
+			cursor: pointer;
+			width: 450px;
+		}
+		
+		h2 {
+			font-weight: normal;
+		}
+	</style>
+	<template>
+		<header id="search" hidden="[[!authed]]">
+			
+			<paper-input value="{{query}}" label="search for repo"></paper-input>
+			
+			<div class="spacer"></div>
+			
+			<gh-user login="[[user.login]]"
+					name="[[user.name]]"
+					email="[[user.email]]"
+					avatar-url="[[user.avatar_url]]"
+					on-tap="showRepos">
+			</gh-user>
+			
+		</header>
+		
+		<gm-repos repos="{{results}}"></gm-repos>
+		
+		<a href="/auth" hidden="[[authed]]">sign in</a>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "gm-index",
+		properties: {
+			authed: {
+				type: Boolean,
+				computed: "isAuthed(accessToken)"
+			},
+			accessToken: {
+				type: String,
+				observer: "tokenChanged"
+			},
+			user: Object,
+			orgs: Array,
+			query: {
+				type: String,
+				observer: "search"
+			},
+			results: {
+				type: Array,
+				value: []
+			}
+		},
+		showRepos: function(event) {
+			var name = selectUpPathElement("gh-user", event.path).login;
+			
+			window.location.href = "/repos.html?user=" + name;
+		},
+		isAuthed: function(token) {
+			return token;
+		},
+		tokenChanged: function (token) {
+			this.gh = new Github(token);
+
+			this.gh.getUser().then(function (user) {
+				this.user = user;
+				
+				this.gh.getOrgs().then(function (orgs) {
+					this.orgs = orgs;
+					
+					this.search("");
+				}.bind(this));
+			}.bind(this));
+		},
+		search: function (query) {
+			if (this.gh) {
+				var orgNames = this.orgs.map(function (org) { return org.login; });
+				
+				var items = this.gh.search(this.user.login, orgNames, query);
+				
+				this.set("results", []);
+				
+				items.forEach(function (promise) {
+					promise.then(function (result) {
+						result.items.forEach(function (item) {
+							this.push("results", item);
+						}.bind(this));
+					}.bind(this));
+				}.bind(this));
+				
+				this.$.select.hidden = true;
+			}
+		}
+	})
+</script>
