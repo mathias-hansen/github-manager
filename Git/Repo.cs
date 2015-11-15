@@ -6,7 +6,6 @@ namespace Git
 {
 	public class Repo
 	{
-		public string Owner { get; set; }
 		public string RepoName { get; set; }
 		public int HookId { get; set; }
 		public string Branch { get; set; }
@@ -19,7 +18,7 @@ namespace Git
 				
 				Clone();
 
-				//File.WriteAllText(repoDataPath, Branch, Encoding.ASCII);	
+				File.WriteAllText(repoDataPath, Branch, Encoding.ASCII);	
 			}
 			else
 			{
@@ -35,9 +34,11 @@ namespace Git
 		}
 		public void Clone()
 		{
+			Console.WriteLine(RepoName);
+			
 			var ph = new ProcessHelper {
 				Command = "git",
-				Arguments = $"clone git@github.com:{Owner}/{RepoName}.git {HookId}",
+				Arguments = $"clone git@github.com:{RepoName}.git {HookId}",
 				WorkingDirectory = BasePath
 			};
 			
@@ -55,10 +56,14 @@ namespace Git
 		}
 		public void Pull()
 		{
+			var repoPath = $"{BasePath}/{HookId}";
+			
+			var branch = File.ReadAllText($"{repoPath}/branch.dat");
+			
 			var ph = new ProcessHelper {
 				Command = "git",
-				Arguments = "pull",
-				WorkingDirectory = $"{BasePath}/{HookId}"
+				Arguments = $"pull origin {branch}",
+				WorkingDirectory = repoPath
 			};
 			
 			ph.OnError = (sender, e) => {

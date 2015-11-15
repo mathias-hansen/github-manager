@@ -43,6 +43,7 @@ namespace Git.Auth
             }
             else if (path == "/webhook")
             {
+                Console.WriteLine("UPDATED");
                 response = UpdateRepo(queryString);
             }
             else if (path == "/auth")
@@ -71,13 +72,18 @@ namespace Git.Auth
         }
         public string CreateRepo(string queryString)
         {
+            var rm = ParseAttributeValue("repo", queryString);
+            
+            Console.WriteLine(rm);
+            
             var repo = new Git.Repo {
                 BasePath = BasePath,
-                Owner = ParseAttributeValue("owner", queryString),
-                RepoName = ParseAttributeValue("repo", queryString),
+                RepoName = rm,
                 HookId = Convert.ToInt32(ParseAttributeValue("hookId", queryString)),
                 Branch = ParseAttributeValue("branch", queryString)
             };
+            
+            Console.WriteLine(repo.RepoName);
             
             repo.Create();
             
@@ -108,7 +114,7 @@ namespace Git.Auth
         public string ParseAttributeValue(string parameterName, string queryString)
         {
             return Regex.Replace(
-                Regex.Match(queryString, parameterName + @"=[\w\-_]+", RegexOptions.IgnoreCase).Value, 
+                Regex.Match(queryString, parameterName + @"=.+?(?=&|$)", RegexOptions.IgnoreCase).Value, 
                 parameterName + "=", "", RegexOptions.IgnoreCase);
         }
     }
