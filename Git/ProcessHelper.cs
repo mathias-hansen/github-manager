@@ -30,6 +30,7 @@ namespace Git
 			Id = process.Id;
 			
 			process.WaitForExit();
+			
 			process.Dispose();
 		}
 		

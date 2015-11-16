@@ -18,7 +18,6 @@ namespace Git
         
         public async Task<string> AuthUser(string code, string redirectUri = "", string state = "") 
         {
-            
             var parameters = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("client_id", _ClientId),
